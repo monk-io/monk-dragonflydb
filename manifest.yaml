@@ -1,0 +1,39 @@
+---
+namespace: dragonflydb
+
+base:
+  defines: runnable
+  metadata:
+    website: https://www.dragonflydb.io/
+    name: DragonflyDB
+    publisher: monk.io
+    icon: https://www.dragonflydb.io/assets/logo.svg
+    description: |
+      Dragonfly is a source-available, multi-threaded Redis® replacement built for modern cloud workloads. Migrate in minutes, no code changes required.
+    source: https://github.com/dragonflydb/dragonfly
+    version: 1.0
+    tags: database, db, redis, cache, nosql
+    private: true
+  containers:
+    dragonflydb:
+      image: docker.dragonflydb.io/dragonflydb/dragonfly
+      image-tag: latest
+      ulimits:
+        memlock:
+          hard: -1
+
+server:
+  defines: runnable
+  inherits: dragonflydb/base
+  metadata:
+    private: false
+  containers:
+    dragonflydb:
+      paths:
+        - <- `${monk-volume-path}/dragonflydb:/data`
+  services:
+    http:
+      container: dragonflydb
+      port: 6379
+      protocol: tcp
+      host-port: 6379
